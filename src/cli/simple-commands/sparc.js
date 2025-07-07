@@ -1,8 +1,6 @@
 // sparc.js - SPARC development mode commands
 import { printSuccess, printError, printWarning } from '../utils.js';
 import { createSparcPrompt } from './sparc-modes/index.js';
-import { Deno, cwd, exit, existsSync } from '../node-compat.js';
-import process from 'process';
 
 export async function sparcCommand(subArgs, flags) {
   const sparcCmd = subArgs[0];
@@ -72,7 +70,7 @@ export async function sparcCommand(subArgs, flags) {
 async function listSparcModes(subArgs) {
   try {
     // Get the actual working directory where the command was run from
-    const workingDir = process.env.PWD || cwd();
+    const workingDir = Deno.env.get('PWD') || Deno.cwd();
     const configPath = `${workingDir}/.roomodes`;
     let configContent;
     try {
@@ -124,7 +122,7 @@ async function showModeInfo(subArgs) {
   
   try {
     // Get the actual working directory where the command was run from
-    const workingDir = process.env.PWD || cwd();
+    const workingDir = Deno.env.get('PWD') || Deno.cwd();
     const configPath = `${workingDir}/.roomodes`;
     let configContent;
     try {
@@ -179,7 +177,7 @@ async function runSparcMode(subArgs, flags) {
   
   try {
     // Get the actual working directory where the command was run from
-    const workingDir = process.env.PWD || cwd();
+    const workingDir = Deno.env.get('PWD') || Deno.cwd();
     const configPath = `${workingDir}/.roomodes`;
     let configContent;
     try {
@@ -369,8 +367,8 @@ async function executeClaude(enhancedTask, toolsList, instanceId, memoryNamespac
   
   // Show debug info for non-interactive mode or when verbose
   if (isNonInteractive || subArgs.includes('--verbose') || subArgs.includes('-v')) {
-    console.log('\n🔍 Debug: Executing claude with:');
-    console.log('Command: claude');
+    console.log('\n🔍 Debug: Executing claude-code with:');
+    console.log('Command: claude-code');
     console.log('Permissions:', enablePermissions ? '✅ Enabled (will prompt)' : '⚡ Skipped (--dangerously-skip-permissions)');
     console.log('Tools:', enablePermissions ? `Specified: ${toolsList}` : 'ALL tools enabled (MCP, WebSearch, etc.)');
     console.log('Mode:', isNonInteractive ? '🤖 Non-interactive' : '💬 Interactive');
@@ -388,7 +386,7 @@ async function executeClaude(enhancedTask, toolsList, instanceId, memoryNamespac
         }
       });
       console.log('\nFull command structure:');
-      console.log('claude "<SPARC prompt>" ' + claudeArgs.slice(1).join(' '));
+      console.log('claude-code "<SPARC prompt>" ' + claudeArgs.slice(1).join(' '));
     }
     console.log();
   }
@@ -396,39 +394,40 @@ async function executeClaude(enhancedTask, toolsList, instanceId, memoryNamespac
   try {
     // Log the actual command being executed
     console.log('\n🚀 Executing command:');
-    console.log(`Command: claude`);
-    console.log(`Working Directory: ${cwd()}`);
+    console.log(`Command: claude-code`);
+    console.log(`Working Directory: ${Deno.cwd()}`);
     console.log(`Number of args: ${claudeArgs.length}`);
     
-    // Check if claude command exists
+    // Check if claude-code command exists
     try {
       const checkCommand = new Deno.Command('which', {
-        args: ['claude'],
+        args: ['claude-code'],
         stdout: 'piped',
         stderr: 'piped',
       });
       const checkResult = await checkCommand.output();
       if (!checkResult.success) {
-        console.error('❌ Error: claude command not found in PATH');
-        console.error('Please ensure claude CLI is installed and in your PATH');
+        console.error('❌ Error: claude-code command not found in PATH');
+        console.error('Please ensure Claude Code CLI is installed and in your PATH');
+        console.error('Install with: npm install -g @anthropic/claude-code');
         return;
       }
       const claudePath = new TextDecoder().decode(checkResult.stdout).trim();
-      console.log(`Claude path: ${claudePath}`);
+      console.log(`Claude Code path: ${claudePath}`);
     } catch (e) {
-      console.warn('⚠️  Could not verify claude command location');
+      console.warn('⚠️  Could not verify claude-code command location');
     }
     
-    const command = new Deno.Command('claude', {
+    const command = new Deno.Command('claude-code', {
       args: claudeArgs,
-      cwd: cwd(), // Explicitly set working directory to current directory
+      cwd: Deno.cwd(), // Explicitly set working directory to current directory
       env: {
         ...Deno.env.toObject(),
         CLAUDE_INSTANCE_ID: instanceId,
         CLAUDE_SPARC_MODE: 'true',
         CLAUDE_FLOW_MEMORY_ENABLED: 'true',
         CLAUDE_FLOW_MEMORY_NAMESPACE: memoryNamespace,
-        CLAUDE_WORKING_DIRECTORY: cwd(), // Also pass as env variable
+        CLAUDE_WORKING_DIRECTORY: Deno.cwd(), // Also pass as env variable
       },
       stdin: 'inherit',
       stdout: 'inherit',

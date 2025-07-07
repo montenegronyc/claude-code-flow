@@ -416,7 +416,7 @@ exit 0
         
         // Check if claude command exists
         try {
-          execSync('which claude', { stdio: 'ignore' });
+          execSync('which claude-code', { stdio: 'ignore' });
         } catch (e) {
           // Claude not found, show fallback message
           console.log(`✅ Swarm initialized with ID: ${swarmId}`);
