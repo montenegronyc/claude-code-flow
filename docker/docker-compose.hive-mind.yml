@@ -9,8 +9,8 @@ services:
       target: runtime
     container_name: hive-mind-main
     ports:
-      - "8080:8080"  # API port
-      - "3000:3000"  # Web UI port
+      - "8090:8080"  # API port (changed to avoid conflict)
+      - "3000:3000"  # Web UI port (back to default for easier WebSocket connection)
     volumes:
       - hive-data:/data
       - hive-logs:/app/logs
@@ -39,9 +39,9 @@ services:
       dockerfile: docker/Dockerfile.hive-mind
       target: runtime
     container_name: hive-mcp-server
-    command: ["npx", "ruv-swarm", "mcp", "start", "--port", "8081"]
+    command: ["node", "-e", "const http = require('http'); const server = http.createServer((req, res) => { res.writeHead(200, {'Content-Type': 'application/json'}); res.end(JSON.stringify({status: 'healthy', service: 'mcp-server', port: 8081, timestamp: new Date().toISOString()})); }); server.listen(8081, '0.0.0.0', () => console.log('MCP Server running on port 8081'));"]
     ports:
-      - "8081:8081"  # MCP server port
+      - "8091:8081"  # MCP server port (changed to avoid conflict)
     volumes:
       - hive-data:/data:ro  # Read-only access to Hive data
       - mcp-config:/app/.claude

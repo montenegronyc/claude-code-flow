@@ -3,12 +3,13 @@
 # Claude-Flow Docker Wrapper Script
 # Makes it easy to use claude-flow in Docker
 
-CONTAINER_NAME="claude-flow-dev-secure"
+CONTAINER_NAME="hive-mind-main"
 
 # Check if container is running
 if ! docker ps --format "table {{.Names}}" | grep -q "^${CONTAINER_NAME}$"; then
     echo "🚀 Starting Claude-Flow Docker environment..."
-    ./docker-secure-start.sh dev
+    cd docker && docker-compose -f docker-compose.hive-mind.yml up -d
+    cd ..
     echo "✅ Environment ready!"
     echo ""
 fi
@@ -43,6 +44,6 @@ case "$1" in
         ;;
     *)
         # Run claude-flow command
-        docker exec $CONTAINER_NAME npx claude-flow "$@"
+        docker exec $CONTAINER_NAME /app/bin/claude-flow "$@"
         ;;
 esac
