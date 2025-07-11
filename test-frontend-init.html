@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Initialization Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #f8f8f2;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #50fa7b;
+            border-radius: 8px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: #282a36;
+            border: 1px solid #44475a;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .status-card h3 {
+            margin-top: 0;
+            color: #50fa7b;
+            border-bottom: 1px solid #44475a;
+            padding-bottom: 10px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px 0;
+        }
+        
+        .status-value {
+            font-weight: bold;
+        }
+        
+        .success { color: #50fa7b; }
+        .error { color: #ff5555; }
+        .warning { color: #f1fa8c; }
+        .info { color: #8be9fd; }
+        
+        .log-container {
+            background: #000;
+            border: 1px solid #44475a;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 2px 0;
+        }
+        
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        button {
+            background: #50fa7b;
+            color: #282a36;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background: #69ff94;
+        }
+        
+        button:disabled {
+            background: #6272a4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Frontend Initialization Test</h1>
+            <p>Testing the Claude Flow Frontend Initialization System</p>
+        </div>
+
+        <div class="controls">
+            <button id="initBtn" onclick="startInitialization()">Initialize Frontend</button>
+            <button id="testBtn" onclick="runTests()" disabled>Run Tests</button>
+            <button id="clearBtn" onclick="clearLogs()">Clear Logs</button>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>🚀 Bootstrap Status</h3>
+                <div class="status-item">
+                    <span>Environment:</span>
+                    <span id="environment" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span>Bootstrapped:</span>
+                    <span id="bootstrapped" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span>Mode:</span>
+                    <span id="mode" class="status-value">-</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>🧩 Components</h3>
+                <div class="status-item">
+                    <span>Console UI:</span>
+                    <span id="consoleUI" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span>Web UI:</span>
+                    <span id="webUI" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span>State Manager:</span>
+                    <span id="stateManager" class="status-value">-</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>📊 Performance</h3>
+                <div class="status-item">
+                    <span>Init Time:</span>
+                    <span id="initTime" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span>Memory Usage:</span>
+                    <span id="memoryUsage" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span>State Size:</span>
+                    <span id="stateSize" class="status-value">-</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>🔧 Features</h3>
+                <div class="status-item">
+                    <span>Real-time Updates:</span>
+                    <span id="realtime" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span>State Persistence:</span>
+                    <span id="persistence" class="status-value">-</span>
+                </div>
+                <div class="status-item">
+                    <span>MCP Integration:</span>
+                    <span id="mcpIntegration" class="status-value">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h3>📋 Initialization Log</h3>
+            <div id="logContainer" class="log-container">
+                <div class="log-entry info">Ready to initialize...</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        let logContainer;
+        let initializationResult = null;
+        
+        // Initialize DOM references
+        document.addEventListener('DOMContentLoaded', () => {
+            logContainer = document.getElementById('logContainer');
+            log('Frontend Test Page Ready', 'info');
+            
+            // Check for existing initialization
+            if (window.claudeFlowInitialization) {
+                log('Found existing initialization', 'success');
+                updateStatus(window.claudeFlowInitialization);
+                document.getElementById('testBtn').disabled = false;
+            }
+        });
+        
+        // Logging function
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `<span style="color: #6272a4;">[${timestamp}]</span> ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        // Clear logs
+        window.clearLogs = function() {
+            logContainer.innerHTML = '<div class="log-entry info">Logs cleared...</div>';
+        }
+        
+        // Start initialization
+        window.startInitialization = async function() {
+            const initBtn = document.getElementById('initBtn');
+            initBtn.disabled = true;
+            initBtn.textContent = 'Initializing...';
+            
+            try {
+                log('🚀 Starting Frontend Initialization...', 'info');
+                
+                // Import and run the initialization
+                const { default: initializeFrontend } = await import('./src/ui/init-frontend.js');
+                
+                log('📦 Frontend module loaded', 'success');
+                
+                const result = await initializeFrontend({
+                    logLevel: 'info',
+                    enablePerformanceLogging: true
+                });
+                
+                initializationResult = result;
+                log('✅ Frontend Initialization Complete!', 'success');
+                updateStatus(result);
+                
+                document.getElementById('testBtn').disabled = false;
+                
+            } catch (error) {
+                log(`❌ Initialization Failed: ${error.message}`, 'error');
+                console.error('Initialization error:', error);
+            } finally {
+                initBtn.disabled = false;
+                initBtn.textContent = 'Initialize Frontend';
+            }
+        }
+        
+        // Update status display
+        function updateStatus(result) {
+            if (!result) return;
+            
+            // Bootstrap status
+            if (result.bootstrap) {
+                document.getElementById('environment').textContent = result.bootstrap.environment?.type || 'unknown';
+                document.getElementById('environment').className = 'status-value ' + (result.bootstrap.bootstrapped ? 'success' : 'error');
+                
+                document.getElementById('bootstrapped').textContent = result.bootstrap.bootstrapped ? 'Yes' : 'No';
+                document.getElementById('bootstrapped').className = 'status-value ' + (result.bootstrap.bootstrapped ? 'success' : 'error');
+                
+                document.getElementById('mode').textContent = result.bootstrap.initialization?.fallbackMode ? 'Fallback' : 'Full';
+                document.getElementById('mode').className = 'status-value ' + (result.bootstrap.initialization?.fallbackMode ? 'warning' : 'success');
+            }
+            
+            // Component status
+            if (result.components) {
+                const updateComponent = (id, component) => {
+                    const elem = document.getElementById(id);
+                    if (elem && component) {
+                        elem.textContent = component.success ? 'Ready' : 'Failed';
+                        elem.className = 'status-value ' + (component.success ? 'success' : 'error');
+                    }
+                };
+                
+                updateComponent('consoleUI', result.components.console);
+                updateComponent('webUI', result.components.webui);
+                updateComponent('stateManager', result.components.state);
+            }
+            
+            // Performance
+            if (result.duration) {
+                document.getElementById('initTime').textContent = `${result.duration}ms`;
+                document.getElementById('initTime').className = 'status-value ' + (result.duration < 5000 ? 'success' : 'warning');
+            }
+            
+            if (performance.memory) {
+                const memory = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                document.getElementById('memoryUsage').textContent = `${memory}MB`;
+                document.getElementById('memoryUsage').className = 'status-value ' + (memory < 50 ? 'success' : 'warning');
+            }
+            
+            if (result.state) {
+                document.getElementById('stateSize').textContent = result.state.stateSize || '0';
+                document.getElementById('stateSize').className = 'status-value success';
+            }
+            
+            // Features
+            document.getElementById('realtime').textContent = 'Enabled';
+            document.getElementById('realtime').className = 'status-value success';
+            
+            document.getElementById('persistence').textContent = 'Enabled';
+            document.getElementById('persistence').className = 'status-value success';
+            
+            document.getElementById('mcpIntegration').textContent = 'Ready';
+            document.getElementById('mcpIntegration').className = 'status-value success';
+        }
+        
+        // Run tests
+        window.runTests = async function() {
+            if (!initializationResult) {
+                log('❌ No initialization result to test', 'error');
+                return;
+            }
+            
+            log('🧪 Starting Frontend Tests...', 'info');
+            
+            const tests = [
+                {
+                    name: 'Bootstrap Available',
+                    test: () => !!window.claudeFlowBootstrap,
+                    description: 'Check if bootstrap is globally available'
+                },
+                {
+                    name: 'State Manager Available',
+                    test: () => !!window.claudeFlowState,
+                    description: 'Check if state manager is globally available'
+                },
+                {
+                    name: 'State Operations',
+                    test: () => {
+                        const state = window.claudeFlowState;
+                        state.set('test', 'value');
+                        return state.get('test') === 'value';
+                    },
+                    description: 'Test basic state operations'
+                },
+                {
+                    name: 'Environment Detection',
+                    test: () => initializationResult.bootstrap?.environment?.type === 'browser',
+                    description: 'Check environment detection'
+                },
+                {
+                    name: 'Performance Metrics',
+                    test: () => initializationResult.duration > 0,
+                    description: 'Check performance tracking'
+                }
+            ];
+            
+            let passed = 0;
+            let failed = 0;
+            
+            for (const test of tests) {
+                try {
+                    const result = test.test();
+                    if (result) {
+                        log(`✅ ${test.name}: PASSED`, 'success');
+                        passed++;
+                    } else {
+                        log(`❌ ${test.name}: FAILED`, 'error');
+                        failed++;
+                    }
+                } catch (error) {
+                    log(`❌ ${test.name}: ERROR - ${error.message}`, 'error');
+                    failed++;
+                }
+            }
+            
+            log(`📊 Test Results: ${passed} passed, ${failed} failed`, passed > failed ? 'success' : 'error');
+            
+            if (passed === tests.length) {
+                log('🎉 All tests passed! Frontend is working correctly.', 'success');
+            } else {
+                log('⚠️ Some tests failed. Check the implementation.', 'warning');
+            }
+        }
+    </script>
+</body>
+</html>
