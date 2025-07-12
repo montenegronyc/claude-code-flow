@@ -1,0 +1,8 @@
+{
+  "agents": [],
+  "tasks": [],
+  "environment": "dev",
+  "template": "cli-tool",
+  "customConfig": {},
+  "lastUpdated": 1752278898564
+}

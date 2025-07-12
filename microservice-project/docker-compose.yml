@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  microservice-project:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=dev
+      - PORT=8080
+    restart: unless-stopped

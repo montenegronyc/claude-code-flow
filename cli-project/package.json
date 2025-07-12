@@ -1,0 +1,12 @@
+{
+  "name": "cli-project",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "cli-project": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src/"
+  }
+}

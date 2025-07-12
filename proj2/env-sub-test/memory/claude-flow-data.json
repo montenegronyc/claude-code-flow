@@ -1,0 +1,8 @@
+{
+  "agents": [],
+  "tasks": [],
+  "environment": "staging",
+  "template": "microservice",
+  "customConfig": {},
+  "lastUpdated": 1752278898677
+}
