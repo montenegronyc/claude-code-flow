@@ -14,6 +14,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 class SqliteMemoryStore {
+  /** @type {import('better-sqlite3').Database | null} */
+  db = null;
+  
   constructor(options = {}) {
     this.options = {
       dbName: options.dbName || 'memory.db',
